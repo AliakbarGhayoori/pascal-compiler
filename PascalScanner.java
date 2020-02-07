@@ -89,6 +89,12 @@ public class PascalScanner implements Lexical {
             if (qoute.contains(codeTxt.substring(index, index+1))){
                 result = result.concat(codeTxt.substring(index, index+1));
                 index += 1;
+                if (codeTxt.substring(index-1, index).equals(",")){
+                    returnVals.type = "`";
+                    returnVals.result = "`";
+                    return returnVals;
+                }
+
                 if (codeTxt.substring(index-1, index).equals(":") || codeTxt.substring(index-1, index ).equals(">")
                 || codeTxt.substring(index-1, index ).equals("<")){
                     if (codeTxt.substring(index, index+1).equals("=")) {
