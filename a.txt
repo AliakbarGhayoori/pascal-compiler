@@ -1,1 +1,10 @@
-a : float := 12;
+a : real := 12  -- %var1 = load float* 12.00000
+b: integer := 19.34
+function main(): integer
+begin
+    if (a = b) then
+    begin
+        c: integer := 10;
+        b := c+c*c;
+    end;
+end
