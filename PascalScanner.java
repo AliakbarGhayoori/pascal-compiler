@@ -125,9 +125,9 @@ public class PascalScanner implements Lexical {
                 }else{
                     Integer index = symTable.get(result);
                     if (!inDCL && index == null) {
-                        // error - not found
+                        // TODO error - not found
                     } else if (inDCL && index != null) {
-                        // error - duplicate
+                        // TODO error - duplicate
                     } else if (inDCL) {
                         symTable.put(result, ++last_id);
                     }
