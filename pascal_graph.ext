@@ -373,6 +373,26 @@
         "anchorY": 370.5,
         "isGraph": false,
         "isGlobal": false
+      },
+      {
+        "start": 18,
+        "end": 19,
+        "token": "string",
+        "func": "push_constant",
+        "anchorX": 680.5,
+        "anchorY": 491.49999999999994,
+        "isGraph": false,
+        "isGlobal": false
+      },
+      {
+        "start": 18,
+        "end": 19,
+        "token": "char",
+        "func": "push_constant",
+        "anchorX": 715.5,
+        "anchorY": 688.5,
+        "isGraph": false,
+        "isGlobal": false
       }
     ],
     "start": 18
