@@ -1,5 +1,5 @@
 a : real := 12  -- %var1 = load float* 12.00000
-b: integer := 19.34
+b: integer := 's'
 function main(): integer
 begin
     if (a = b) then

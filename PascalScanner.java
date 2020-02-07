@@ -11,6 +11,15 @@ final class ReturnVals{
     public String result = "";
 }
 
+final class Variable{
+    public int id = 0;
+    public String type = "";
+
+    public Variable(int id) {
+        this.id = id;
+    }
+}
+
 public class PascalScanner implements Lexical {
     public List<Character> whiteSpace = Arrays.asList(' ', '\f', '\n', '\t', '\r');
     public List<String> keywords = Arrays.asList("and", "or", "array", "assign", "break", "begin", "continue", "do",
@@ -24,7 +33,7 @@ public class PascalScanner implements Lexical {
     // for communicate to parser ...
     public boolean inDCL = false;
     public String tokenValue = "";
-    Map<String, Integer> symTable = new HashMap<>();
+    Map<String, Variable> symTable = new HashMap<>();
     // end
 
     private int last_id = 0;
@@ -142,13 +151,13 @@ public class PascalScanner implements Lexical {
             else if (keywords.contains(result)){
                 returnVals.type = result;
             }else{
-                Integer index = symTable.get(result);
-                if (!inDCL && index == null) {
+                Variable var = symTable.get(result);
+                if (!inDCL && var == null) {
                     // TODO error - not found
-                } else if (inDCL && index != null) {
+                } else if (inDCL && var != null) {
                     // TODO error - duplicate
                 } else if (inDCL) {
-                    symTable.put(result, ++last_id);
+                    symTable.put(result, new Variable(++last_id));
                 }
                 returnVals.type = type;
             }
