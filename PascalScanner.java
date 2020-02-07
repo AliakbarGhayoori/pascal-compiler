@@ -13,7 +13,8 @@ final class ReturnVals{
 
 public class PascalScanner implements Lexical {
     public List<Character> whiteSpace = Arrays.asList(' ', '\f', '\n', '\t', '\r');
-    public List<String> keywords = Arrays.asList("and", "or", "array", "assign", "break", "begin", "continue", "do", "else", "end", "false","function","procedure", "if","of", "return", "true", "while", "var");
+    public List<String> keywords = Arrays.asList("and", "or", "array", "assign", "break", "begin", "continue", "do",
+            "else", "end", "false","function","procedure", "if","of", "return", "true", "then", "while", "var");
     public List<String> types = Arrays.asList("string", "real", "integer", "char", "boolean");
     public List<String> qoute = Arrays.asList(".", ":", ";", ",", "^", "&", "*", "/", "%", "~", "+", "-", "(", ")", "[", "]", "=", "<", ">");
     public int index = 0;
@@ -55,21 +56,43 @@ public class PascalScanner implements Lexical {
             if (index == textLen-1){
                 break;
             }
+
+            if(Pattern.matches("--", codeTxt.substring(index, index +2))) {
+                index +=2;
+                while(index < textLen && !Pattern.matches("\n", codeTxt.substring(index, index +1))){
+                    result = result.concat(codeTxt.substring(index, index +1));
+                    index += 1;
+                }
+                result = "";
+            }
+
+
+            if (Pattern.matches("<--", codeTxt.substring(index, index +3))){
+                type = "comment";
+                index += 3;
+                while(index < textLen && !Pattern.matches("-->", codeTxt.substring(index, index +3))){
+                    result = result.concat(codeTxt.substring(index, index +1));
+                    index += 1;
+                }
+                index += 3;
+                result="";
+            }
+
             if (Pattern.matches("[0-9]", codeTxt.substring(index, index +1))){
                 result = result.concat(codeTxt.substring(index, index +1));
                 index +=1;
 
-                while (Pattern.matches("[0-9]", codeTxt.substring(index, index +1))) {
+                while (index < textLen && Pattern.matches("[0-9]", codeTxt.substring(index, index +1))) {
                     result = result.concat(codeTxt.substring(index, index + 1));
                     index += 1;
                 }
                 Character tmpChar = codeTxt.charAt(index);
                 if (tmpChar.equals('.')){
-                        type = "real";
+                        type = "real_const";
                         result = result.concat(codeTxt.substring(index, index +1));
                         index += 1;
 
-                        while(Pattern.matches("[0-9]", codeTxt.substring(index, index +1))){
+                        while(index < textLen && Pattern.matches("[0-9]", codeTxt.substring(index, index +1))){
                             result = result.concat(codeTxt.substring(index, index +1));
                             index +=1;
                             if (index == textLen-1){
@@ -79,7 +102,7 @@ public class PascalScanner implements Lexical {
                             }
                         }
                     }
-                type = "int";
+                type = "int_const";
                 returnVals.type = type;
                 returnVals.result = result;
                 return returnVals;
@@ -112,7 +135,7 @@ public class PascalScanner implements Lexical {
                 result = result.concat(codeTxt.substring(index, index +1));
                 index += 1;
 
-                while (Pattern.matches("([a-z]|[A-Z]|[0-9]|_)", codeTxt.substring(index, index +1))){
+                while (index < textLen && Pattern.matches("([a-z]|[A-Z]|[0-9]|_)", codeTxt.substring(index, index +1))){
                     result = result.concat(codeTxt.substring(index, index +1));
                     index += 1;
                 }
@@ -155,7 +178,7 @@ public class PascalScanner implements Lexical {
 
             if(Pattern.matches("\"", codeTxt.substring(index, index +1))) {
                 index +=1;
-                while(!Pattern.matches("\"", codeTxt.substring(index, index +1))){
+                while(index < textLen && !Pattern.matches("\"", codeTxt.substring(index, index +1))){
                     result = result.concat(codeTxt.substring(index, index +1));
                     index += 1;
                 }
@@ -165,34 +188,7 @@ public class PascalScanner implements Lexical {
                 returnVals.result = result;
                 return returnVals;
             }
-
-
-            if(Pattern.matches("--", codeTxt.substring(index, index +2))) {
-                index +=2;
-                while(!Pattern.matches("\n", codeTxt.substring(index, index +1))){
-                    result = result.concat(codeTxt.substring(index, index +1));
-                    index += 1;
-                }
-                type = "comment";
-                returnVals.type = type;
-                returnVals.result = result;
-                return returnVals;
-            }
-
-
-            if (Pattern.matches("<--", codeTxt.substring(index, index +3))){
-                type = "comment";
-                index += 3;
-                while(!Pattern.matches("-->", codeTxt.substring(index, index +3))){
-                    result = result.concat(codeTxt.substring(index, index +1));
-                    index += 1;
-                }
-                index += 3;
-                returnVals.type = type;
-                returnVals.result = result;
-                return returnVals;
-            }
-            }
+        }
         returnVals.type = type;
         returnVals.result = result;
         return returnVals;
