@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -12,8 +13,9 @@ final class ReturnVals{
 
 public class PascalScanner implements Lexical {
     public List<Character> whiteSpace = Arrays.asList(' ', '\f', '\n', '\t', '\r');
-    public List<String> keywords = Arrays.asList("array", "assign", "break", "begin", "continue", "do", "else", "end", "false","function","procedure", "if","of", "return", "true", "while", "var");
+    public List<String> keywords = Arrays.asList("and", "or", "array", "assign", "break", "begin", "continue", "do", "else", "end", "false","function","procedure", "if","of", "return", "true", "while", "var");
     public List<String> types = Arrays.asList("string", "real", "integer", "char", "boolean");
+    public List<String> qoute = Arrays.asList(".", ":", ";", ",", "^", "&", "*", "/", "%", "~", "+", "-", "(", ")", "[", "]", "=", "<", ">");
     public int index = 0;
     public int lenght = 0;
     public String codeTxt ="";
@@ -44,7 +46,9 @@ public class PascalScanner implements Lexical {
             index +=1;
         }
         if (index == textLen){
-            return returnVals; //TODO seems buggy...
+            returnVals.type = "$";
+            returnVals.result = "$";
+            return returnVals;
         }
 
         while (true){
@@ -81,7 +85,23 @@ public class PascalScanner implements Lexical {
                 return returnVals;
                 }
 
-            if (Pattern.matches("([a-z]|[A-Z])",codeTxt.substring(index, index +1))){ // TODO Escapes typeID and :
+
+            if (qoute.contains(codeTxt.substring(index, index+1))){
+                result = result.concat(codeTxt.substring(index, index+1));
+                index += 1;
+                if (codeTxt.substring(index-1, index).equals(":") || codeTxt.substring(index-1, index ).equals(">")
+                || codeTxt.substring(index-1, index ).equals("<")){
+                    result = result.concat(codeTxt.substring(index, index+1));
+                    index+=1;
+                }
+                type = result;
+                returnVals.type = type;
+                returnVals.result = result;
+                return returnVals;
+
+            }
+
+            if (Pattern.matches("([a-z]|[A-Z])",codeTxt.substring(index, index +1))){
                 type = "id";
                 result = result.concat(codeTxt.substring(index, index +1));
                 index += 1;
@@ -141,7 +161,6 @@ public class PascalScanner implements Lexical {
             }
 
 
-
             if(Pattern.matches("--", codeTxt.substring(index, index +2))) {
                 index +=2;
                 while(!Pattern.matches("\n", codeTxt.substring(index, index +1))){
@@ -175,8 +194,9 @@ public class PascalScanner implements Lexical {
 
     public static void main(String[] args) throws IOException {
         PascalScanner scanner = new PascalScanner("/home/aliakbar/EDU/SUT/term7/compiler/projectJava/src/a.txt");
-        System.out.println(scanner.nextTokenAkbar().result);
-        System.out.println(scanner.nextTokenAkbar().type);
+        ReturnVals tmp = scanner.nextTokenAkbar();
+        System.out.println(tmp.result);
+        System.out.println(tmp.type);
     }
 
     @Override
