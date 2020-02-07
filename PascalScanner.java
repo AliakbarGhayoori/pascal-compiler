@@ -11,9 +11,9 @@ final class ReturnVals{
 }
 
 public class PascalScanner implements Lexical {
-    public ArrayList<String> whiteSpace = new ArrayList<String>();
-    List<String> keywords = Arrays.asList("array", "assign", "break", "begin", "continue", "do", "else", "end", "false","function","procedure", "if","of", "return", "true", "while", "var");
-    List<String> types = Arrays.asList("string", "real", "integer", "char", "boolean");
+    public List<Character> whiteSpace = Arrays.asList(' ', '\f', '\n', '\t', '\r');
+    public List<String> keywords = Arrays.asList("array", "assign", "break", "begin", "continue", "do", "else", "end", "false","function","procedure", "if","of", "return", "true", "while", "var");
+    public List<String> types = Arrays.asList("string", "real", "integer", "char", "boolean");
     public int index = 0;
     public int lenght = 0;
     public String codeTxt ="";
@@ -34,27 +34,17 @@ public class PascalScanner implements Lexical {
         index = 0;
     }
 
-    public void fillWhiteSpace(){
-        whiteSpace.add("\n");
-        whiteSpace.add("\t");
-        whiteSpace.add("\f");
-        whiteSpace.add("\r");
-    }
-
-
-
-
     public ReturnVals nextTokenAkbar() {
         int textLen = codeTxt.length();
         String result = "";
         String type = "";
 
 
-        while (index < textLen & whiteSpace.contains(codeTxt.charAt(index))){
+        while (index < textLen && whiteSpace.contains(codeTxt.charAt(index))){
             index +=1;
         }
         if (index == textLen){
-            return returnVals;
+            return returnVals; //TODO seems buggy...
         }
 
         while (true){
@@ -91,7 +81,7 @@ public class PascalScanner implements Lexical {
                 return returnVals;
                 }
 
-            if (Pattern.matches("([a-z]|[A-Z])",codeTxt.substring(index, index +1))){
+            if (Pattern.matches("([a-z]|[A-Z])",codeTxt.substring(index, index +1))){ // TODO Escapes typeID and :
                 type = "id";
                 result = result.concat(codeTxt.substring(index, index +1));
                 index += 1;
@@ -185,7 +175,6 @@ public class PascalScanner implements Lexical {
 
     public static void main(String[] args) throws IOException {
         PascalScanner scanner = new PascalScanner("/home/aliakbar/EDU/SUT/term7/compiler/projectJava/src/a.txt");
-        scanner.fillWhiteSpace();
         System.out.println(scanner.nextTokenAkbar().result);
         System.out.println(scanner.nextTokenAkbar().type);
     }
