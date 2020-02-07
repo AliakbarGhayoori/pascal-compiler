@@ -43,158 +43,148 @@ public class PascalScanner implements Lexical {
         String type = "";
 
 
-        while (index < textLen && whiteSpace.contains(codeTxt.charAt(index))){
-            index +=1;
+        while (index < textLen){
+            if (whiteSpace.contains(codeTxt.charAt(index)))
+                index +=1;
+            else if (Pattern.matches("--", codeTxt.substring(index, index +2))) {
+                index += 2;
+                while (index < textLen && !Pattern.matches("\n", codeTxt.substring(index, index + 1))) {
+                    index += 1;
+                }
+            }
+            else if (Pattern.matches("<--", codeTxt.substring(index, index +3))){
+                index += 3;
+                while(index < textLen && !Pattern.matches("-->", codeTxt.substring(index, index +3))){
+                    index += 1;
+                }
+                index += 3;
+            } else {
+                break;
+            }
         }
+
         if (index == textLen){
             returnVals.type = "$";
             returnVals.result = "$";
             return returnVals;
         }
 
-        while (true){
-            if (index == textLen-1){
-                break;
-            }
+        if (Pattern.matches("[0-9]", codeTxt.substring(index, index +1))){
+            result = result.concat(codeTxt.substring(index, index +1));
+            index +=1;
 
-            if(Pattern.matches("--", codeTxt.substring(index, index +2))) {
-                index +=2;
-                while(index < textLen && !Pattern.matches("\n", codeTxt.substring(index, index +1))){
+            while (index < textLen && Pattern.matches("[0-9]", codeTxt.substring(index, index +1))) {
+                result = result.concat(codeTxt.substring(index, index + 1));
+                index += 1;
+            }
+            Character tmpChar = codeTxt.charAt(index);
+            if (tmpChar.equals('.')){
+                    type = "real_const";
                     result = result.concat(codeTxt.substring(index, index +1));
                     index += 1;
+
+                    while(index < textLen && Pattern.matches("[0-9]", codeTxt.substring(index, index +1))){
+                        result = result.concat(codeTxt.substring(index, index +1));
+                        index +=1;
+                        if (index == textLen-1){
+                            returnVals.type = type;
+                            returnVals.result = result;
+                            return returnVals;
+                        }
+                    }
                 }
-                result = "";
+            type = "int_const";
+            returnVals.type = type;
+            returnVals.result = result;
+            return returnVals;
+        }
+
+
+        if (qoute.contains(codeTxt.substring(index, index+1))){
+            result = result.concat(codeTxt.substring(index, index+1));
+            index += 1;
+            if (codeTxt.substring(index-1, index).equals(",")){
+                returnVals.type = "`";
+                returnVals.result = "`";
+                return returnVals;
             }
 
-
-            if (Pattern.matches("<--", codeTxt.substring(index, index +3))){
-                type = "comment";
-                index += 3;
-                while(index < textLen && !Pattern.matches("-->", codeTxt.substring(index, index +3))){
-                    result = result.concat(codeTxt.substring(index, index +1));
-                    index += 1;
-                }
-                index += 3;
-                result="";
-            }
-
-            if (Pattern.matches("[0-9]", codeTxt.substring(index, index +1))){
-                result = result.concat(codeTxt.substring(index, index +1));
-                index +=1;
-
-                while (index < textLen && Pattern.matches("[0-9]", codeTxt.substring(index, index +1))) {
+            if (codeTxt.substring(index-1, index).equals(":") || codeTxt.substring(index-1, index ).equals(">")
+            || codeTxt.substring(index-1, index ).equals("<")){
+                if (codeTxt.substring(index, index+1).equals("=")) {
                     result = result.concat(codeTxt.substring(index, index + 1));
                     index += 1;
                 }
-                Character tmpChar = codeTxt.charAt(index);
-                if (tmpChar.equals('.')){
-                        type = "real_const";
-                        result = result.concat(codeTxt.substring(index, index +1));
-                        index += 1;
-
-                        while(index < textLen && Pattern.matches("[0-9]", codeTxt.substring(index, index +1))){
-                            result = result.concat(codeTxt.substring(index, index +1));
-                            index +=1;
-                            if (index == textLen-1){
-                                returnVals.type = type;
-                                returnVals.result = result;
-                                return returnVals;
-                            }
-                        }
-                    }
-                type = "int_const";
-                returnVals.type = type;
-                returnVals.result = result;
-                return returnVals;
-                }
-
-
-            if (qoute.contains(codeTxt.substring(index, index+1))){
-                result = result.concat(codeTxt.substring(index, index+1));
-                index += 1;
-                if (codeTxt.substring(index-1, index).equals(",")){
-                    returnVals.type = "`";
-                    returnVals.result = "`";
-                    return returnVals;
-                }
-
-                if (codeTxt.substring(index-1, index).equals(":") || codeTxt.substring(index-1, index ).equals(">")
-                || codeTxt.substring(index-1, index ).equals("<")){
-                    if (codeTxt.substring(index, index+1).equals("=")) {
-                        result = result.concat(codeTxt.substring(index, index + 1));
-                        index += 1;
-                    }
-                    if (codeTxt.substring(index, index+1).equals(">") && codeTxt.substring(index-1, index).equals("<")){
-                        result = result.concat(codeTxt.substring(index, index + 1));
-                        index += 1;
-                    }
-                }
-                type = result;
-                returnVals.type = type;
-                returnVals.result = result;
-                return returnVals;
-
-            }
-
-            if (Pattern.matches("([a-z]|[A-Z])",codeTxt.substring(index, index +1))){
-                type = "id";
-                result = result.concat(codeTxt.substring(index, index +1));
-                index += 1;
-
-                while (index < textLen && Pattern.matches("([a-z]|[A-Z]|[0-9]|_)", codeTxt.substring(index, index +1))){
-                    result = result.concat(codeTxt.substring(index, index +1));
+                if (codeTxt.substring(index, index+1).equals(">") && codeTxt.substring(index-1, index).equals("<")){
+                    result = result.concat(codeTxt.substring(index, index + 1));
                     index += 1;
                 }
-
-                if (types.contains(result)){
-                    returnVals.type = "typeID";
-                }
-                else if (keywords.contains(result)){
-                    returnVals.type = result;
-                }else{
-                    Integer index = symTable.get(result);
-                    if (!inDCL && index == null) {
-                        // TODO error - not found
-                    } else if (inDCL && index != null) {
-                        // TODO error - duplicate
-                    } else if (inDCL) {
-                        symTable.put(result, ++last_id);
-                    }
-                    returnVals.type = type;
-                }
-                returnVals.result = result;
-                return returnVals;
             }
+            type = result;
+            returnVals.type = type;
+            returnVals.result = result;
+            return returnVals;
+        }
 
-            if(Pattern.matches("'", codeTxt.substring(index, index +1))){
-                index += 1;
+        if (Pattern.matches("([a-z]|[A-Z])",codeTxt.substring(index, index +1))){
+            type = "id";
+            result = result.concat(codeTxt.substring(index, index +1));
+            index += 1;
+
+            while (index < textLen && Pattern.matches("([a-z]|[A-Z]|[0-9]|_)", codeTxt.substring(index, index +1))){
                 result = result.concat(codeTxt.substring(index, index +1));
                 index += 1;
-                if(Pattern.matches("'", codeTxt.substring(index, index +1))) {
-                    index++;
-                    type = "char";
-                    returnVals.type = type;
-                    returnVals.result = result;
-                    return returnVals;
-                }
-                else {
-                    System.out.println("undefined syntax");
-                }
             }
 
-            if(Pattern.matches("\"", codeTxt.substring(index, index +1))) {
-                index +=1;
-                while(index < textLen && !Pattern.matches("\"", codeTxt.substring(index, index +1))){
-                    result = result.concat(codeTxt.substring(index, index +1));
-                    index += 1;
+            if (types.contains(result)){
+                returnVals.type = "typeID";
+            }
+            else if (keywords.contains(result)){
+                returnVals.type = result;
+            }else{
+                Integer index = symTable.get(result);
+                if (!inDCL && index == null) {
+                    // TODO error - not found
+                } else if (inDCL && index != null) {
+                    // TODO error - duplicate
+                } else if (inDCL) {
+                    symTable.put(result, ++last_id);
                 }
+                returnVals.type = type;
+            }
+            returnVals.result = result;
+            return returnVals;
+        }
+
+        if(Pattern.matches("'", codeTxt.substring(index, index +1))){
+            index += 1;
+            result = result.concat(codeTxt.substring(index, index +1));
+            index += 1;
+            if(Pattern.matches("'", codeTxt.substring(index, index +1))) {
                 index++;
-                type = "string";
+                type = "char";
                 returnVals.type = type;
                 returnVals.result = result;
                 return returnVals;
+            }
+            else {
+                System.out.println("undefined syntax");
             }
         }
+
+        if(Pattern.matches("\"", codeTxt.substring(index, index +1))) {
+            index +=1;
+            while(index < textLen && !Pattern.matches("\"", codeTxt.substring(index, index +1))){
+                result = result.concat(codeTxt.substring(index, index +1));
+                index += 1;
+            }
+            index++;
+            type = "string";
+            returnVals.type = type;
+            returnVals.result = result;
+            return returnVals;
+        }
+
         returnVals.type = type;
         returnVals.result = result;
         return returnVals;

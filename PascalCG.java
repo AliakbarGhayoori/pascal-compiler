@@ -11,6 +11,7 @@ public class PascalCG implements CodeGenerator {
 
     @Override
     public void doSemantic(String sem) {
+        System.out.println("my print ... " + sem);
         switch (sem) {
             case "push_constant":
                 push_constant();
@@ -18,6 +19,7 @@ public class PascalCG implements CodeGenerator {
     }
 
     private void push_constant() {
-        seStack.push(scanner.returnVals);
+        seStack.push(scanner.returnVals.type); // can be "real_const" and "int_const"
+        seStack.push(scanner.returnVals.result); // result is a string
     }
 }
