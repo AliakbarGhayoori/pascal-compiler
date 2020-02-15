@@ -1,8 +1,11 @@
 import java.io.IOException;
+import java.util.Stack;
 
 public class Main {
     public static void main(String[] args) {
         try {
+            Stack<String> stack = new Stack<>();
+            System.out.println(stack.pop());
             PascalScanner scanner = new PascalScanner(
                     "a.txt");
             PascalCG cg = new PascalCG(scanner);

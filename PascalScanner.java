@@ -14,7 +14,7 @@ final class ReturnVals{
 final class Variable{
     public int id = 0;
     public String type = "";
-
+    public String var_sign = "%";
     public Variable(int id) {
         this.id = id;
     }
